@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لعبة تقييم الأهداف SMART</title>
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    background: #f5f5f0;
+    color: #1a1a1a;
+    min-height: 100vh;
+    padding: 20px;
+    line-height: 1.7;
+  }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-size: 22px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  h2 {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  h3 {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  p {
+    font-size: 14px;
+    color: #555;
+  }
+
+  .intro-card {
+    text-align: center;
+    background: #fafaf5;
+    padding: 2.5rem 1.5rem;
+  }
+
+  .intro-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+  }
+
+  .intro-card p {
+    margin-bottom: 1.5rem;
+    line-height: 1.8;
+    color: #444;
+    font-size: 15px;
+  }
+
+  .btn-primary {
+    background: #1a1a1a;
+    color: #ffffff;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.2s;
+  }
+
+  .btn-primary:hover {
+    opacity: 0.85;
+  }
+
+  .btn-secondary {
+    background: #ffffff;
+    color: #1a1a1a;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
+  }
+
+  .btn-secondary:hover {
+    background: #f5f5f0;
+  }
+
+  .game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 14px;
+    color: #666;
+  }
+
+  .progress-track {
+    background: #ededed;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 10%;
+    background: #1a1a1a;
+    transition: width 0.4s ease;
+  }
+
+  .goal-card {
+    background: #fafaf5;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    padding: 1.25rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.25rem;
+  }
+
+  .goal-label {
+    font-size: 13px;
+    color: #777;
+    margin-bottom: 8px;
+  }
+
+  .goal-text {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.8;
+    color: #1a1a1a;
+  }
+
+  .choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 1.25rem;
+  }
+
+  .choice-btn {
+    padding: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    background: #ffffff;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+    color: #1a1a1a;
+  }
+
+  .choice-btn:hover:not(:disabled) {
+    background: #fafaf5;
+    border-color: rgba(0, 0, 0, 0.3);
+  }
+
+  .choice-btn:disabled {
+    cursor: default;
+  }
+
+  .choice-correct {
+    background: #e8f5e9 !important;
+    border-color: #4caf50 !important;
+    color: #1b5e20 !important;
+  }
+
+  .choice-wrong {
+    background: #ffebee !important;
+    border-color: #ef5350 !important;
+    color: #b71c1c !important;
+  }
+
+  .choice-dim {
+    opacity: 0.4;
+  }
+
+  .feedback {
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+    display: none;
+  }
+
+  .feedback-correct {
+    background: #e8f5e9;
+    border: 1px solid #c8e6c9;
+  }
+
+  .feedback-wrong {
+    background: #ffebee;
+    border: 1px solid #ffcdd2;
+  }
+
+  .feedback-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-weight: 500;
+    font-size: 15px;
+  }
+
+  .feedback-correct .feedback-header {
+    color: #1b5e20;
+  }
+
+  .feedback-wrong .feedback-header {
+    color: #b71c1c;
+  }
+
+  .feedback-section-label {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 4px;
+  }
+
+  .feedback-answer {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    color: #1a1a1a;
+  }
+
+  .feedback-explanation {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #333;
+  }
+
+  .next-btn {
+    width: 100%;
+    padding: 14px;
+    background: #1a1a1a;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    display: none;
+    transition: opacity 0.2s;
+  }
+
+  .next-btn:hover {
+    opacity: 0.85;
+  }
+
+  .result-card {
+    text-align: center;
+    background: #fafaf5;
+    padding: 2.5rem 1.5rem;
+  }
+
+  .result-icon {
+    font-size: 56px;
+    margin-bottom: 12px;
+  }
+
+  .result-title {
+    font-size: 22px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .result-label {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 1rem;
+  }
+
+  .score-display {
+    font-size: 54px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    color: #1a1a1a;
+  }
+
+  .score-suffix {
+    font-size: 24px;
+    color: #888;
+  }
+
+  .result-message {
+    font-size: 15px;
+    color: #555;
+    margin-bottom: 1.5rem;
+    line-height: 1.8;
+    padding: 0 1rem;
+  }
+
+  .review-section {
+    text-align: right;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .review-title {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+
+  .review-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .review-item:last-child {
+    border-bottom: none;
+  }
+
+  .review-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .review-correct {
+    color: #2e7d32;
+  }
+
+  .review-wrong {
+    color: #c62828;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  @media (max-width: 600px) {
+    body {
+      padding: 12px;
+    }
+    .card, .intro-card, .result-card {
+      padding: 1.25rem;
+    }
+    .goal-text {
+      font-size: 15px;
+    }
+    .choices {
+      grid-template-columns: 1fr;
+    }
+    .score-display {
+      font-size: 44px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- شاشة البداية -->
+  <div id="intro-screen" class="card intro-card">
+    <div class="intro-icon">🎯</div>
+    <h1>لعبة تقييم الأهداف SMART</h1>
+    <p>
+      سيُعرض عليك ١٠ أهداف تشغيلية واحداً تلو الآخر بترتيب عشوائي.<br>
+      مهمّتك: تحديد ما إذا كان كل هدف يستوفي معايير SMART أم لا.<br>
+      بعد كل إجابة سترى التغذية الراجعة والتفسير،<br>
+      وفي النهاية تحصل على تقديرك من ١٠.
+    </p>
+    <button id="start-btn" class="btn-primary">ابدأ اللعبة ←</button>
+  </div>
+
+  <!-- شاشة اللعب -->
+  <div id="game-screen" class="hidden">
+    <div class="card">
+      <div class="game-header">
+        <span>السؤال <span id="q-num">١</span> من ١٠</span>
+        <span>النقاط: <span id="score-display">٠</span></span>
+      </div>
+
+      <div class="progress-track">
+        <div id="progress-bar" class="progress-fill"></div>
+      </div>
+
+      <div class="goal-card">
+        <p class="goal-label">الهدف التشغيلي</p>
+        <p id="goal-text" class="goal-text"></p>
+      </div>
+
+      <div class="choices">
+        <button class="choice-btn" data-answer="true">
+          ✓ SMART
+        </button>
+        <button class="choice-btn" data-answer="false">
+          ✗ غير SMART
+        </button>
+      </div>
+
+      <div id="feedback" class="feedback">
+        <div class="feedback-header">
+          <span id="feedback-icon"></span>
+          <span id="feedback-title"></span>
+        </div>
+        <p class="feedback-section-label">الإجابة الصحيحة</p>
+        <p id="correct-answer" class="feedback-answer"></p>
+        <p class="feedback-section-label">سبب الحكم</p>
+        <p id="explanation" class="feedback-explanation"></p>
+      </div>
+
+      <button id="next-btn" class="next-btn">السؤال التالي ←</button>
+    </div>
+  </div>
+
+  <!-- شاشة النتيجة -->
+  <div id="result-screen" class="card result-card hidden">
+    <div id="result-icon" class="result-icon"></div>
+    <h2 id="result-title" class="result-title"></h2>
+    <p class="result-label">تقديرك النهائي</p>
+    <div class="score-display">
+      <span id="final-score">٠</span><span class="score-suffix"> / ١٠</span>
+    </div>
+    <p id="result-message" class="result-message"></p>
+
+    <div class="review-section">
+      <p class="review-title">مراجعة الإجابات</p>
+      <div id="answers-review"></div>
+    </div>
+
+    <button id="restart-btn" class="btn-secondary" style="margin-top: 1.5rem;">
+      ↻ إعادة اللعبة
+    </button>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  // قائمة الأهداف الكاملة
+  const allGoals = [
+    {
+      text: "رفع نسبة التخليص الجمركي الإلكتروني للمعاملات التجارية من ٧٢٪ إلى ٩٠٪ بنهاية الربع الرابع ٢٠٢٦.",
+      isSmart: true,
+      explanation: "واضح، قابل للقياس (٧٢٪ → ٩٠٪)، واقعي، مرتبط بالأداء، ومحدد بزمن (نهاية الربع الرابع ٢٠٢٦)."
+    },
+    {
+      text: "تحسين تجربة المسافرين في المنافذ الجمركية.",
+      isSmart: false,
+      explanation: "الهدف عام جداً وغير قابل للقياس، ولا يحدد كيف سيتم التحسين أو متى، ولا يوجد مؤشر أداء واضح."
+    },
+    {
+      text: "تقليل متوسط زمن تفتيش الشاحنات في جسر الملك فهد من ٤٥ دقيقة إلى ٢٥ دقيقة خلال ٦ أشهر.",
+      isSmart: true,
+      explanation: "يحتوي على خط أساس (٤٥ دقيقة)، قيمة مستهدفة (٢٥ دقيقة)، ومحدد بفترة زمنية واضحة (٦ أشهر)."
+    },
+    {
+      text: "تطوير أداء موظفي الجمارك ليصبح أفضل.",
+      isSmart: false,
+      explanation: "لا يوضح معنى \"أفضل\"، ولا توجد مؤشرات أو مدة زمنية أو نتائج محددة قابلة للقياس."
+    },
+    {
+      text: "تنفيذ ١٢ ورشة توعوية سنوية للتجار والمخلصين الجمركيين حول الأنظمة والإجراءات الجديدة خلال عام ٢٠٢٦.",
+      isSmart: true,
+      explanation: "قابل للقياس (١٢ ورشة) ومحدد بعدد واضح وفترة زمنية محددة (عام ٢٠٢٦) وفئة مستهدفة واضحة."
+    },
+    {
+      text: "استخدام أحدث التقنيات في العمل الجمركي.",
+      isSmart: false,
+      explanation: "غير محدد: فما هي التقنيات؟ وما مستوى الاستخدام المطلوب؟ ولا يوجد إطار زمني أو معيار قياس."
+    },
+    {
+      text: "خفض عدد الشكاوى المتعلقة بتأخير المعاملات الجمركية بنسبة ٣٠٪ بحلول ديسمبر ٢٠٢٦.",
+      isSmart: true,
+      explanation: "محدد وقابل للقياس (٣٠٪)، وله موعد نهائي واضح (ديسمبر ٢٠٢٦)، ومرتبط بمؤشر أداء واقعي."
+    },
+    {
+      text: "تعزيز الأمن الجمركي في جميع المنافذ.",
+      isSmart: false,
+      explanation: "لا يوضح كيف سيتم التعزيز أو كيف سيتم قياس النجاح، ولا يحدد مؤشرات أو فترة زمنية."
+    },
+    {
+      text: "تدريب ٨٠٪ من موظفي التفتيش الجمركي على استخدام نظام إدارة المخاطر الإلكتروني قبل نهاية الربع الثالث ٢٠٢٦.",
+      isSmart: true,
+      explanation: "يحدد الفئة المستهدفة (موظفو التفتيش)، النسبة المطلوبة (٨٠٪)، والموعد النهائي (الربع الثالث ٢٠٢٦)."
+    },
+    {
+      text: "زيادة كفاءة العمليات الجمركية بشكل كبير.",
+      isSmart: false,
+      explanation: "عبارة فضفاضة، لا تحتوي على معيار قياس أو تعريف للكفاءة أو إطار زمني محدد."
+    }
+  ];
+
+  // دالة خلط عشوائي (Fisher-Yates)
+  function shuffle(array) {
+    const arr = array.slice();
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  // تحويل الأرقام إلى أرقام عربية
+  function toArabicNum(num) {
+    return num.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+  }
+
+  // حالة اللعبة
+  const state = {
+    goals: [],
+    current: 0,
+    score: 0,
+    answers: []
+  };
+
+  // عناصر الواجهة
+  const introScreen = document.getElementById('intro-screen');
+  const gameScreen = document.getElementById('game-screen');
+  const resultScreen = document.getElementById('result-screen');
+  const startBtn = document.getElementById('start-btn');
+  const nextBtn = document.getElementById('next-btn');
+  const restartBtn = document.getElementById('restart-btn');
+  const qNum = document.getElementById('q-num');
+  const scoreDisplay = document.getElementById('score-display');
+  const progressBar = document.getElementById('progress-bar');
+  const goalText = document.getElementById('goal-text');
+  const feedback = document.getElementById('feedback');
+  const feedbackIcon = document.getElementById('feedback-icon');
+  const feedbackTitle = document.getElementById('feedback-title');
+  const correctAnswer = document.getElementById('correct-answer');
+  const explanation = document.getElementById('explanation');
+  const choices = document.querySelectorAll('.choice-btn');
+
+  function startGame() {
+    state.goals = shuffle(allGoals);
+    state.current = 0;
+    state.score = 0;
+    state.answers = [];
+    introScreen.classList.add('hidden');
+    resultScreen.classList.add('hidden');
+    gameScreen.classList.remove('hidden');
+    loadQuestion();
+  }
+
+  function loadQuestion() {
+    const q = state.goals[state.current];
+    qNum.textContent = toArabicNum(state.current + 1);
+    scoreDisplay.textContent = toArabicNum(state.score);
+    progressBar.style.width = ((state.current + 1) * 10) + '%';
+    goalText.textContent = q.text;
+    feedback.style.display = 'none';
+    nextBtn.style.display = 'none';
+
+    choices.forEach(btn => {
+      btn.disabled = false;
+      btn.classList.remove('choice-correct', 'choice-wrong', 'choice-dim');
+    });
+  }
+
+  function handleAnswer(userAnswer) {
+    const q = state.goals[state.current];
+    const correct = userAnswer === q.isSmart;
+
+    if (correct) {
+      state.score++;
+      scoreDisplay.textContent = toArabicNum(state.score);
+    }
+    state.answers.push({ goal: q, correct: correct, userAnswer: userAnswer });
+
+    choices.forEach(btn => {
+      btn.disabled = true;
+      const ans = btn.getAttribute('data-answer') === 'true';
+      if (ans === q.isSmart) {
+        btn.classList.add('choice-correct');
+      } else if (ans === userAnswer && !correct) {
+        btn.classList.add('choice-wrong');
+      } else {
+        btn.classList.add('choice-dim');
+      }
+    });
+
+    feedback.style.display = 'block';
+    if (correct) {
+      feedback.className = 'feedback feedback-correct';
+      feedbackIcon.textContent = '✓';
+      feedbackTitle.textContent = 'إجابة صحيحة';
+    } else {
+      feedback.className = 'feedback feedback-wrong';
+      feedbackIcon.textContent = '✗';
+      feedbackTitle.textContent = 'إجابة غير صحيحة';
+    }
+
+    correctAnswer.textContent = q.isSmart ? 'SMART' : 'غير SMART';
+    explanation.textContent = q.explanation;
+
+    nextBtn.style.display = 'block';
+    if (state.current === state.goals.length - 1) {
+      nextBtn.textContent = 'عرض النتيجة 🏆';
+    } else {
+      nextBtn.textContent = 'السؤال التالي ←';
+    }
+  }
+
+  function showResult() {
+    gameScreen.classList.add('hidden');
+    resultScreen.classList.remove('hidden');
+    document.getElementById('final-score').textContent = toArabicNum(state.score);
+
+    const resultIcon = document.getElementById('result-icon');
+    const resultTitle = document.getElementById('result-title');
+    const resultMessage = document.getElementById('result-message');
+
+    if (state.score === 10) {
+      resultIcon.textContent = '🏆';
+      resultTitle.textContent = 'ممتاز! إتقان كامل';
+      resultMessage.textContent = 'لديك فهم متميز لمعايير SMART وتستطيع تقييم الأهداف بدقة عالية.';
+    } else if (state.score >= 8) {
+      resultIcon.textContent = '🌟';
+      resultTitle.textContent = 'جيد جداً';
+      resultMessage.textContent = 'لديك فهم قوي لمعايير SMART مع بعض الجوانب التي يمكن تحسينها.';
+    } else if (state.score >= 6) {
+      resultIcon.textContent = '⭐';
+      resultTitle.textContent = 'جيد';
+      resultMessage.textContent = 'فهمك للمعايير في تطور، راجع الأهداف التي أخطأت فيها لتعميق المعرفة.';
+    } else {
+      resultIcon.textContent = '📚';
+      resultTitle.textContent = 'يحتاج إلى مراجعة';
+      resultMessage.textContent = 'ننصح بمراجعة معايير SMART (محدد، قابل للقياس، قابل للتحقيق، واقعي، محدد بزمن) قبل المحاولة مرة أخرى.';
+    }
+
+    const review = document.getElementById('answers-review');
+    let html = '';
+    state.answers.forEach((a, i) => {
+      const iconText = a.correct ? '✓' : '✗';
+      const iconClass = a.correct ? 'review-correct' : 'review-wrong';
+      const goalSnippet = a.goal.text.length > 70 ? a.goal.text.substring(0, 70) + '...' : a.goal.text;
+      html += '<div class="review-item">' +
+        '<span class="review-icon ' + iconClass + '">' + iconText + '</span>' +
+        '<span>السؤال ' + toArabicNum(i + 1) + ': ' + goalSnippet + '</span>' +
+        '</div>';
+    });
+    review.innerHTML = html;
+  }
+
+  // ربط الأحداث
+  startBtn.addEventListener('click', startGame);
+  restartBtn.addEventListener('click', startGame);
+
+  choices.forEach(btn => {
+    btn.addEventListener('click', function() {
+      if (btn.disabled) return;
+      const userAnswer = btn.getAttribute('data-answer') === 'true';
+      handleAnswer(userAnswer);
+    });
+  });
+
+  nextBtn.addEventListener('click', function() {
+    if (state.current === state.goals.length - 1) {
+      showResult();
+    } else {
+      state.current++;
+      loadQuestion();
+    }
+  });
+})();
+</script>
+</body>
+</html>
